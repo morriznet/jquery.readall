@@ -3,7 +3,7 @@
  * Created by Anders Fjällström - anders@morriz.net - http://www.morriz.net
  * For documentation see https://github.com/morriznet/jquery.readall
  * Released under MIT license
- * version 0.1 (ALFA)
+ * version 1.0
  */
 
 (function ($) {
@@ -11,6 +11,8 @@
         var settings = $.extend({
             // Default values
             showheight: 96,                         // height to show
+            showrows: null,                         // rows to show (overrides showheight)
+            animationspeed: 200,                    // speed of transition
             button:                                 // settings for buttons
             {
                 textShowmore: 'Read more',          // text shown on button to show more
@@ -21,17 +23,33 @@
         }, options);
         $(this).each(function () {
             var $this = $(this),
-                fullheight = function () { return $this[0].scrollHeight; /*$this.innerHeight();*/ },
+                fullheight = function () { return $this[0].scrollHeight; },
                 wrapperclass = 'readall-wrapper',
                 hiddenclass = 'readall-hide';
+            if (settings.showrows != null) {
+                var lineHeight = Math.floor(parseFloat($this.css('font-size')) * 1.5);
+                settings.showheight = lineHeight * settings.showrows;
+            }
             $this.addClass('readall').css({ 'overflow': 'hidden' });
 
-            //console.log($this);
-            var onResize = function (event) { /*console.log('resize');*/ /*console.log(event);*/
+            var onResize = function (event) {
+                // on resize check if readall is needed
                 var _button = $this.parent().find('button.' + settings.button.classShowmore + ', button.' + settings.button.classShowless);
-                if (fullheight() > settings.showheight) { $(_button).show(); } else { $(_button).hide(); }
-                //TODO: If button visibility is changed from load then the height will either be fixed or missing also the hiddenclass might differ from the state of the button
-                // -- make sure to set the correct values when state changes
+                if (fullheight() > settings.showheight + $(_button).outerHeight()) {
+                    if (!$(_button).is(':visible') || event == null) {
+                        $this.css({ 'height': settings.showheight + 'px', 'max-height': settings.showheight + 'px' });
+                        $(this).text(settings.button.textShowmore);
+                        $this.addClass(hiddenclass);
+                        $(this).addClass(settings.button.classShowmore).removeClass(settings.button.classShowless);
+                        $(_button).show();
+                    }
+                } else {
+                    if ($(_button).is(':visible') || event == null) {
+                        $this.css({ 'height': '', 'max-height': '' });
+                        $this.removeClass(hiddenclass);
+                        $(_button).hide();
+                    }
+                }
             };
             
             if ($this.parent().not(wrapperclass)) {
@@ -39,11 +57,15 @@
                 var _button = $('<button />').addClass(settings.button.classShowmore).text(settings.button.textShowmore).click(function (e) {
                     e.preventDefault();
                     if ($this.hasClass(hiddenclass)) {
-                        $this.css({ 'height': '', 'max-height': '' });
-                        $(this).text(settings.button.textShowless);
+                        $this.css({ 'height': settings.showheight + 'px', 'max-height': '' }).animate({ height: fullheight() + 'px' }, settings.animationspeed, function () {
+                            $this.css({ 'height': '' });
+                            $(_button).text(settings.button.textShowless);
+                        });
                     } else {
-                        $this.css({ 'height': settings.showheight + 'px', 'max-height': settings.showheight + 'px' });
-                        $(this).text(settings.button.textShowmore);
+                        $this.animate({ 'height': settings.showheight + 'px' }, settings.animationspeed, function () {
+                            $this.css({ 'max-height': settings.showheight + 'px' });
+                            $(_button).text(settings.button.textShowmore);
+                        });
                     }
                     $this.toggleClass(hiddenclass);
                     $(this).toggleClass(settings.button.classShowmore).toggleClass(settings.button.classShowless);
@@ -51,9 +73,7 @@
                 $this.after(_button);
 
                 $(window).bind('orientationchange resize', onResize);
-                if (fullheight() > settings.showheight) {
-                    $this.addClass(hiddenclass).css({ 'height': settings.showheight + 'px', 'max-height': settings.showheight + 'px' });
-                }
+                
                 onResize(null);
             }
         });
