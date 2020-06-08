@@ -19,8 +19,8 @@ Include *jquery.readall.css* on the page and *jquery.readall.js* (after jQuery) 
     //Set options
     var options = {
         showheight: 109, 
-        button.textShowmore: 'More...', 
-        button.textShowless: 'Less...'
+        btnTextShowmore: 'More...', 
+        btnTextShowless: 'Less...'
     }
     $(element).readall(options);
 </script>
@@ -34,15 +34,16 @@ var options = {
     showheight: 96,                         // height to show
     showrows: null,                         // rows to show (overrides showheight)
     animationspeed: 200,                    // speed of transition
-    button:                                 // settings for buttons
-    {
-        textShowmore: 'Read more',          // text shown on button to show more
-        textShowless: 'Read less',          // text shown on button to show less
-        classShowmore: 'readall-button',    // class(es) on button to show more
-        classShowless: 'readall-button'     // class(es) on button to show less
-    }
+    btnTextShowmore: 'Read more',           // text shown on button to show more
+    btnTextShowless: 'Read less',           // text shown on button to show less
+    btnClassShowmore: 'readall-button',     // class(es) on button to show more
+    btnClassShowless: 'readall-button'      // class(es) on button to show less
 }
 ```
+## Versions
+1.1: Changed option-parameters for buttons to improve setup and some bugfixes
+
+1.0: Initial release
 
 ## License
 Copyright &copy; 2020 Anders Fj&auml;llstr&ouml;m, licensed under the MIT License 
