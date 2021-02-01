@@ -41,9 +41,11 @@ var options = {
 }
 ```
 ## Versions
+1.2: Replaced deprecated JQuery functions and event shorthands
+
 1.1: Changed option-parameters for buttons to improve setup and some bugfixes
 
 1.0: Initial release
 
 ## License
-Copyright &copy; 2020 Anders Fj&auml;llstr&ouml;m, licensed under the MIT License 
+Copyright &copy; 2021 Anders Fj&auml;llstr&ouml;m, licensed under the MIT License 
